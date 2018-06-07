@@ -33,9 +33,7 @@ void UTankAimingComponent::SetTurretReference(UTankTurret * Turret)
 
 void UTankAimingComponent::AimAt(FVector HitLocation, float LaunchSpeed)
 {
-	if (!Barrel) return;
-
-	UE_LOG(LogTemp, Warning, TEXT("Firing at %f"), LaunchSpeed)
+	if (!Barrel || !Turret) return;
 
 	FVector LaunchVelocity;
 	FVector StartLocation = Barrel->GetSocketLocation("EndCannon");
@@ -64,8 +62,6 @@ void UTankAimingComponent::MoveBarrelTowards(FVector Direction) const
 	auto BarrelRotator = Barrel->GetForwardVector().Rotation();
 	auto AimRotator = Direction.Rotation();
 	auto DeltaRotator = AimRotator - BarrelRotator;
-
-	UE_LOG(LogTemp, Warning, TEXT("DeltaRotator : %s"), *DeltaRotator.ToString())
 
 	Barrel->Elevate(DeltaRotator.Pitch);
 	Turret->Rotate(DeltaRotator.Yaw);
