@@ -8,25 +8,20 @@
 void ATankAIController::BeginPlay() {
 	Super::BeginPlay();
 
-	auto PlayerTank = GetPlayerTank();
+	ControlledTank = Cast<ATank>(GetPawn());
+	PlayerTank = Cast<ATank>(GetWorld()->GetFirstPlayerController()->GetPawn());
 
-	if (!PlayerTank)
-		UE_LOG(LogTemp, Error, TEXT("Could not find player tank !"))
+	if (!PlayerTank || !ControlledTank)
+		UE_LOG(LogTemp, Error, TEXT("Could not find player tank or possessed tank !"))
 }
 
 void ATankAIController::Tick(float DeltaTime)
 {
-	GetTankPossessed()->AimAt(
-		GetPlayerTank()->GetActorLocation()
+	if (!ControlledTank || !PlayerTank) return;
+
+	ControlledTank->AimAt(
+		PlayerTank->GetActorLocation()
 	);
-}
 
-ATank * ATankAIController::GetTankPossessed() const
-{
-	return Cast<ATank>(GetPawn());
-}
-
-ATank * ATankAIController::GetPlayerTank() const
-{
-	return Cast<ATank>(GetWorld()->GetFirstPlayerController()->GetPawn());
+	ControlledTank->Fire();
 }
