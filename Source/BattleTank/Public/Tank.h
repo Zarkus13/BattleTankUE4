@@ -9,6 +9,7 @@
 class UTankBarrel;
 class UTankTurret;
 class UTankAimingComponent;
+class UTankMovementComponent;
 
 class AProjectile;
 class UTankBarrel;
@@ -30,17 +31,20 @@ public:
 	UFUNCTION(BlueprintCallable, Category = Firing)
 	void Fire();
 
-	UPROPERTY(EditAnywhere, Category = Firing)
+	UPROPERTY(EditDefaultsOnly, Category = Firing)
 	float ReloadTimeInSeconds = 3.f;
 
 protected:
 	UTankAimingComponent * TankAimingComponent = nullptr;
 
+	UPROPERTY(BlueprintReadOnly, Category = Movement)
+	UTankMovementComponent * TankMovementComponent = nullptr;
+
 private:
 	// Sets default values for this pawn's properties
 	ATank();
 
-	UPROPERTY(EditAnywhere, Category = Firing)
+	UPROPERTY(EditDefaultsOnly, Category = Firing)
 	float LaunchSpeed = 100000.f;
 
 	UPROPERTY(EditAnywhere, Category = Setup)
