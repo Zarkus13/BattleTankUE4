@@ -81,3 +81,7 @@ Content/KiteDemo
 Content/Lighting
 Content/ParagonProps
 Content/SampleMap
+
+.idea
+cmake-build-debug
+cmake-build-release

@@ -5,9 +5,13 @@
 
 
 void UTankTrack::SetThrottle(float Throttle) {
-	auto ForceApplied = GetForwardVector() * TrackMaxDrivingForce * FMath::Clamp<float>(Throttle, 0, 1);
-	auto ForceLocation = GetComponentLocation();
-	auto TankRoot = Cast<UPrimitiveComponent>(GetOwner()->GetRootComponent());
+	if (Throttle != 0) {
+		auto ForceApplied = GetForwardVector() * TrackMaxDrivingForce * FMath::Clamp<float>(Throttle, -1, 1);
+		auto ForceLocation = GetSocketLocation("ThrottleFront");
+		auto TankRoot = Cast<UPrimitiveComponent>(GetOwner()->GetRootComponent());
 
-	TankRoot->AddForceAtLocation(ForceApplied, ForceLocation);
+		UE_LOG(LogTemp, Warning, TEXT("ForceApplied : %s"), *ForceApplied.ToString())
+
+		TankRoot->AddForceAtLocation(ForceApplied, ForceLocation);
+	}
 }
