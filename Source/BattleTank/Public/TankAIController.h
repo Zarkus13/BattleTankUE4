@@ -17,6 +17,9 @@ class BATTLETANK_API ATankAIController : public AAIController
 	GENERATED_BODY()
 
 private:
+	UPROPERTY(EditDefaultsOnly, Category = Movement)
+	float AcceptanceRadius = 3000;
+
 	ATank* ControlledTank = nullptr;
 	ATank* PlayerTank = nullptr;
 
