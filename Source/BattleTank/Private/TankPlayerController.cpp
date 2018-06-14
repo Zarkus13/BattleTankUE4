@@ -4,6 +4,7 @@
 #include "GameFramework/Pawn.h"
 #include "Engine/World.h"
 #include "Tank.h"
+#include "TankAimingComponent.h"
 
 #define OUT
 
@@ -11,14 +12,12 @@
 void ATankPlayerController::BeginPlay() {
 	Super::BeginPlay();
 
-	UE_LOG(LogTemp, Warning, TEXT("ATankPlayerController BeginPlay !"))
+	auto AimingComponent = GetControlledTank()->FindComponentByClass<UTankAimingComponent>();
 
-	auto Tank = GetControlledTank();
-
-	if (!Tank)
-		UE_LOG(LogTemp, Error, TEXT("Player controller not possessing a tank !"))
+	if (ensure(AimingComponent))
+		FoundAimingComponent(AimingComponent);
 	else
-		UE_LOG(LogTemp, Warning, TEXT("Tank : %s"), *GetControlledTank()->GetName())
+		UE_LOG(LogTemp, Error, TEXT("No AimingComponent !"))
 }
 
 void ATankPlayerController::Tick(float DeltaTime)
@@ -34,7 +33,7 @@ ATank* ATankPlayerController::GetControlledTank() const {
 
 void ATankPlayerController::AimTowardsCrosshair() const
 {
-	if (!GetControlledTank())
+	if (!ensure(GetControlledTank()))
 		return;
 
 	FVector HitLocation;

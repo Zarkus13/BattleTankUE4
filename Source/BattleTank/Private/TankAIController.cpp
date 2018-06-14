@@ -11,13 +11,13 @@ void ATankAIController::BeginPlay() {
 	ControlledTank = Cast<ATank>(GetPawn());
 	PlayerTank = Cast<ATank>(GetWorld()->GetFirstPlayerController()->GetPawn());
 
-	if (!PlayerTank || !ControlledTank)
+	if (!ensure(PlayerTank && ControlledTank))
 		UE_LOG(LogTemp, Error, TEXT("Could not find player tank or possessed tank !"))
 }
 
 void ATankAIController::Tick(float DeltaTime)
 {
-	if (!ControlledTank || !PlayerTank) return;
+	if (!ensure(ControlledTank && PlayerTank)) return;
 
 	MoveToActor(PlayerTank, AcceptanceRadius);
 

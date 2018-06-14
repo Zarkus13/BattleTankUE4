@@ -7,6 +7,7 @@
 #include "TankPlayerController.generated.h"
 
 class ATank;
+class UTankAimingComponent;
 
 /**
 *
@@ -26,11 +27,16 @@ public:
 	UPROPERTY(EditDefaultsOnly)
 	int32 LineTraceRange = 1000000;
 
+protected:
+	UFUNCTION(BlueprintCallable, Category = "Setup")
+	ATank * GetControlledTank() const;
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "Setup")
+	void FoundAimingComponent(UTankAimingComponent* AimingCompRef);
+
 private:
 	void BeginPlay() override;
 	void Tick(float DeltaTime) override;
-
-	ATank * GetControlledTank() const;
 
 	void AimTowardsCrosshair() const;
 

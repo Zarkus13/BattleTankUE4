@@ -2,10 +2,9 @@
 
 #include "TankMovementComponent.h"
 #include "TankTrack.h"
-#include "TankTurret.h"
 
 void UTankMovementComponent::Initialize(UTankTrack* LeftTrack, UTankTrack* RightTrack) {
-	if (!LeftTrack || !RightTrack)
+	if (!ensure(LeftTrack && RightTrack))
 		return;
 
 	this->LeftTrack = LeftTrack;

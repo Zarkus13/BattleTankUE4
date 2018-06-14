@@ -7,6 +7,7 @@
 #include "Engine/World.h"
 #include "TankBarrel.h"
 #include "TankTurret.h"
+#include "Projectile.h"
 
 #define OUT
 
@@ -21,19 +22,15 @@ UTankAimingComponent::UTankAimingComponent()
 	// ...
 }
 
-void UTankAimingComponent::SetBarrelReference(UTankBarrel * Barrel)
+void UTankAimingComponent::Initialize(UTankBarrel * Barrel, UTankTurret * Turret)
 {
 	this->Barrel = Barrel;
-}
-
-void UTankAimingComponent::SetTurretReference(UTankTurret * Turret)
-{
 	this->Turret = Turret;
 }
 
-void UTankAimingComponent::AimAt(FVector HitLocation, float LaunchSpeed)
+void UTankAimingComponent::AimAt(FVector HitLocation)
 {
-	if (!Barrel || !Turret) return;
+	if (!ensure(Barrel && Turret)) return;
 
 	FVector LaunchVelocity;
 	FVector StartLocation = Barrel->GetSocketLocation("EndCannon");
@@ -57,13 +54,34 @@ void UTankAimingComponent::AimAt(FVector HitLocation, float LaunchSpeed)
 		);
 }
 
-void UTankAimingComponent::MoveBarrelTowards(FVector Direction) const
+void UTankAimingComponent::MoveBarrelTowards(FVector Direction)
 {
 	auto BarrelRotator = Barrel->GetForwardVector().Rotation();
 	auto AimRotator = Direction.Rotation();
 	auto DeltaRotator = AimRotator - BarrelRotator;
 
+	if ((FPlatformTime::Seconds() - LastFireTime) < ReloadTimeInSeconds)
+		FiringState = EFiringState::Reloading;
+	else if (DeltaRotator.Pitch <= 0.01f && DeltaRotator.Yaw <= 0.01f)
+		FiringState = EFiringState::Locked;
+	else
+		FiringState = EFiringState::Aiming;
+
 	Barrel->Elevate(DeltaRotator.Pitch);
 	Turret->Rotate(DeltaRotator.Yaw);
+}
+
+void UTankAimingComponent::Fire(TSubclassOf<AProjectile> ProjectileBlueprint) {
+	if ((FPlatformTime::Seconds() - LastFireTime) > ReloadTimeInSeconds) {
+		auto Projectile = GetWorld()->SpawnActor<AProjectile>(
+			ProjectileBlueprint,
+			Barrel->GetSocketLocation("Projectile"),
+			Barrel->GetSocketRotation("Projectile")
+		);
+
+		Projectile->LaunchProjectile(LaunchSpeed);
+
+		LastFireTime = FPlatformTime::Seconds();
+	}
 }
 

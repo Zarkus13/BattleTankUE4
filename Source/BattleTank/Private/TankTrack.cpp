@@ -10,8 +10,6 @@ void UTankTrack::SetThrottle(float Throttle) {
 		auto ForceLocation = GetSocketLocation("ThrottleFront");
 		auto TankRoot = Cast<UPrimitiveComponent>(GetOwner()->GetRootComponent());
 
-		UE_LOG(LogTemp, Warning, TEXT("ForceApplied : %s"), *ForceApplied.ToString())
-
 		TankRoot->AddForceAtLocation(ForceApplied, ForceLocation);
 	}
 }
