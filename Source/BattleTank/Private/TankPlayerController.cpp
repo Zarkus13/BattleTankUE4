@@ -3,7 +3,6 @@
 #include "TankPlayerController.h"
 #include "GameFramework/Pawn.h"
 #include "Engine/World.h"
-#include "Tank.h"
 #include "TankAimingComponent.h"
 
 #define OUT
@@ -12,7 +11,7 @@
 void ATankPlayerController::BeginPlay() {
 	Super::BeginPlay();
 
-	auto AimingComponent = GetControlledTank()->FindComponentByClass<UTankAimingComponent>();
+	AimingComponent = GetPawn()->FindComponentByClass<UTankAimingComponent>();
 
 	if (ensure(AimingComponent))
 		FoundAimingComponent(AimingComponent);
@@ -27,18 +26,14 @@ void ATankPlayerController::Tick(float DeltaTime)
 	AimTowardsCrosshair();
 }
 
-ATank* ATankPlayerController::GetControlledTank() const {
-	return Cast<ATank>(GetPawn());
-}
-
 void ATankPlayerController::AimTowardsCrosshair() const
 {
-	if (!ensure(GetControlledTank()))
+	if (!ensure(AimingComponent))
 		return;
 
 	FVector HitLocation;
 	if (GetSightRayHitLocation(OUT HitLocation)) {
-		GetControlledTank()->AimAt(HitLocation);
+		AimingComponent->AimAt(HitLocation);
 	}
 }
 

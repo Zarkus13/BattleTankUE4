@@ -6,6 +6,7 @@
 #include "AIController.h"
 #include "TankAIController.generated.h"
 
+class UTankAimingComponent;
 class ATank;
 
 /**
@@ -20,7 +21,7 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Movement")
 	float AcceptanceRadius = 3000;
 
-	ATank* ControlledTank = nullptr;
+	UTankAimingComponent* AimingComponent = nullptr;
 	ATank* PlayerTank = nullptr;
 
 	void BeginPlay() override;

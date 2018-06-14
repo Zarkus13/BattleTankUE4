@@ -4,24 +4,22 @@
 #include "GameFramework/Actor.h"
 #include "Engine/World.h"
 #include "Tank.h"
+#include "TankAimingComponent.h"
 
 void ATankAIController::BeginPlay() {
 	Super::BeginPlay();
 
-	ControlledTank = Cast<ATank>(GetPawn());
+	AimingComponent = GetPawn()->FindComponentByClass<UTankAimingComponent>();
 	PlayerTank = Cast<ATank>(GetWorld()->GetFirstPlayerController()->GetPawn());
-
-	if (!ensure(PlayerTank && ControlledTank))
-		UE_LOG(LogTemp, Error, TEXT("Could not find player tank or possessed tank !"))
 }
 
 void ATankAIController::Tick(float DeltaTime)
 {
-	if (!ensure(ControlledTank && PlayerTank)) return;
+	if (!ensure(AimingComponent && PlayerTank)) return;
 
 	MoveToActor(PlayerTank, AcceptanceRadius);
 
-	ControlledTank->AimAt(
+	AimingComponent->AimAt(
 		PlayerTank->GetActorLocation()
 	);
 

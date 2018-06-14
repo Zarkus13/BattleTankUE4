@@ -71,7 +71,9 @@ void UTankAimingComponent::MoveBarrelTowards(FVector Direction)
 	Turret->Rotate(DeltaRotator.Yaw);
 }
 
-void UTankAimingComponent::Fire(TSubclassOf<AProjectile> ProjectileBlueprint) {
+void UTankAimingComponent::Fire() {
+	if (!ensure(ProjectileBlueprint)) return;
+
 	if ((FPlatformTime::Seconds() - LastFireTime) > ReloadTimeInSeconds) {
 		auto Projectile = GetWorld()->SpawnActor<AProjectile>(
 			ProjectileBlueprint,
