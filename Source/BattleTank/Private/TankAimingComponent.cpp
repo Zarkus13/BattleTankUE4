@@ -73,13 +73,13 @@ void UTankAimingComponent::MoveBarrelTowards(FVector Direction)
 		void UTankAimingComponent::UpdateFiringState(FRotator DeltaRotator) {
 			if ((FPlatformTime::Seconds() - LastFireTime) < ReloadTimeInSeconds)
 				FiringState = EFiringState::Reloading;
-			else if (IsTurretMoving(DeltaRotator))
+			else if (IsTurretNotMoving(DeltaRotator))
 				FiringState = EFiringState::Locked;
 			else
 				FiringState = EFiringState::Aiming;
 		}
 
-		bool UTankAimingComponent::IsTurretMoving(FRotator DeltaRotator) {
+		bool UTankAimingComponent::IsTurretNotMoving(FRotator DeltaRotator) {
 			return DeltaRotator.Pitch <= MaximumDeltaForLockedState && DeltaRotator.Yaw <= MaximumDeltaForLockedState;
 		}
 
