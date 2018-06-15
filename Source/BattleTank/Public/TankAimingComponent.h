@@ -48,10 +48,19 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Firing")
 	float ReloadTimeInSeconds = 3.f;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Firing")
+	float MaximumDeltaForLockedState = 0.01f;
+
 	double LastFireTime = 0;
 	
 	UTankBarrel* Barrel = nullptr;
 	UTankTurret* Turret = nullptr;
 
+	bool CalculateLaunchVelocity(FVector& LaunchVelocity, FVector StartLocation, FVector HitLocation);
+	
 	void MoveBarrelTowards(FVector Direction);
+	void UpdateFiringState(FRotator DeltaRotator);
+	bool IsTurretMoving(FRotator DeltaRotator);
+	
+	AProjectile* SpawnProjectile() const;
 };

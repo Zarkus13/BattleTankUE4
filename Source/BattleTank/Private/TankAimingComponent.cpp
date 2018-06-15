@@ -35,24 +35,28 @@ void UTankAimingComponent::AimAt(FVector HitLocation)
 	FVector LaunchVelocity;
 	FVector StartLocation = Barrel->GetSocketLocation("EndCannon");
 
-	bool SuccessCalculateLaunchVelocity = 
-		UGameplayStatics::SuggestProjectileVelocity(
-			this,
-			OUT LaunchVelocity,
-			StartLocation,
-			HitLocation,
-			LaunchSpeed,
-			false,
-			0,
-			0,
-			ESuggestProjVelocityTraceOption::DoNotTrace
-		);
-
-	if (SuccessCalculateLaunchVelocity)
+	if (CalculateLaunchVelocity(OUT LaunchVelocity, StartLocation, HitLocation))
 		MoveBarrelTowards(
 			LaunchVelocity.GetSafeNormal()
 		);
 }
+
+		bool UTankAimingComponent::CalculateLaunchVelocity(FVector & LaunchVelocity, FVector StartLocation, FVector HitLocation)
+		{
+			return UGameplayStatics::SuggestProjectileVelocity(
+				this,
+				OUT LaunchVelocity,
+				StartLocation,
+				HitLocation,
+				LaunchSpeed,
+				false,
+				0,
+				0,
+				ESuggestProjVelocityTraceOption::DoNotTrace
+			);
+		}
+
+
 
 void UTankAimingComponent::MoveBarrelTowards(FVector Direction)
 {
@@ -60,30 +64,43 @@ void UTankAimingComponent::MoveBarrelTowards(FVector Direction)
 	auto AimRotator = Direction.Rotation();
 	auto DeltaRotator = AimRotator - BarrelRotator;
 
-	if ((FPlatformTime::Seconds() - LastFireTime) < ReloadTimeInSeconds)
-		FiringState = EFiringState::Reloading;
-	else if (DeltaRotator.Pitch <= 0.01f && DeltaRotator.Yaw <= 0.01f)
-		FiringState = EFiringState::Locked;
-	else
-		FiringState = EFiringState::Aiming;
+	UpdateFiringState(DeltaRotator);
 
 	Barrel->Elevate(DeltaRotator.Pitch);
 	Turret->Rotate(DeltaRotator.Yaw);
 }
 
+		void UTankAimingComponent::UpdateFiringState(FRotator DeltaRotator) {
+			if ((FPlatformTime::Seconds() - LastFireTime) < ReloadTimeInSeconds)
+				FiringState = EFiringState::Reloading;
+			else if (IsTurretMoving(DeltaRotator))
+				FiringState = EFiringState::Locked;
+			else
+				FiringState = EFiringState::Aiming;
+		}
+
+		bool UTankAimingComponent::IsTurretMoving(FRotator DeltaRotator) {
+			return DeltaRotator.Pitch <= MaximumDeltaForLockedState && DeltaRotator.Yaw <= MaximumDeltaForLockedState;
+		}
+
+
+
 void UTankAimingComponent::Fire() {
 	if (!ensure(ProjectileBlueprint)) return;
 
 	if ((FPlatformTime::Seconds() - LastFireTime) > ReloadTimeInSeconds) {
-		auto Projectile = GetWorld()->SpawnActor<AProjectile>(
-			ProjectileBlueprint,
-			Barrel->GetSocketLocation("Projectile"),
-			Barrel->GetSocketRotation("Projectile")
-		);
-
-		Projectile->LaunchProjectile(LaunchSpeed);
+		SpawnProjectile()->LaunchProjectile(LaunchSpeed);
 
 		LastFireTime = FPlatformTime::Seconds();
 	}
 }
+
+		AProjectile* UTankAimingComponent::SpawnProjectile() const
+		{
+			return GetWorld()->SpawnActor<AProjectile>(
+				ProjectileBlueprint,
+				Barrel->GetSocketLocation("Projectile"),
+				Barrel->GetSocketRotation("Projectile")
+			);
+		}
 
