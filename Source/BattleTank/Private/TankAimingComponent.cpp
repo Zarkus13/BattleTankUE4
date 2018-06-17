@@ -75,7 +75,9 @@ void UTankAimingComponent::MoveBarrelTowards(FVector Direction)
 }
 
 		void UTankAimingComponent::UpdateFiringState(FRotator DeltaRotator) {
-			if ((FPlatformTime::Seconds() - LastFireTime) < ReloadTimeInSeconds)
+			if (FiringState == EFiringState::OutOfAmmo)
+				return;
+			else if ((FPlatformTime::Seconds() - LastFireTime) < ReloadTimeInSeconds)
 				FiringState = EFiringState::Reloading;
 			else if (IsTurretNotMoving(DeltaRotator))
 				FiringState = EFiringState::Locked;
@@ -92,10 +94,16 @@ void UTankAimingComponent::MoveBarrelTowards(FVector Direction)
 void UTankAimingComponent::Fire() {
 	if (!ensure(ProjectileBlueprint)) return;
 
-	if ((FPlatformTime::Seconds() - LastFireTime) > ReloadTimeInSeconds) {
+	if (FiringState != EFiringState::OutOfAmmo && FiringState != EFiringState::Reloading) {
 		SpawnProjectile()->LaunchProjectile(LaunchSpeed);
 
 		LastFireTime = FPlatformTime::Seconds();
+
+		if (CurrentAmmo > 0)
+			CurrentAmmo--;
+		
+		if (CurrentAmmo <= 0)
+			FiringState = EFiringState::OutOfAmmo;
 	}
 }
 

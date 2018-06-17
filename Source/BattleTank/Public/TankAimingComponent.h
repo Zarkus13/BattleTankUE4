@@ -14,7 +14,8 @@ UENUM()
 enum class EFiringState : uint8 {
 	Reloading,
 	Aiming,
-	Locked
+	Locked,
+	OutOfAmmo
 };
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -39,6 +40,12 @@ public:
 protected:
 	UPROPERTY(BlueprintReadOnly, Category = "Firing")
 	EFiringState FiringState = EFiringState::Locked;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Firing")
+	int32 MaximumAmmo = 10;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Firing")
+	int32 CurrentAmmo = MaximumAmmo;
 
 private:
 	UPROPERTY(EditAnywhere, Category = "Setup")
