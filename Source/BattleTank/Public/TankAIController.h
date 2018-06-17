@@ -19,7 +19,7 @@ class BATTLETANK_API ATankAIController : public AAIController
 
 private:
 	UPROPERTY(EditDefaultsOnly, Category = "Movement")
-	float AcceptanceRadius = 3000;
+	float AcceptanceRadius = 8000;
 
 	UTankAimingComponent* AimingComponent = nullptr;
 	ATank* PlayerTank = nullptr;

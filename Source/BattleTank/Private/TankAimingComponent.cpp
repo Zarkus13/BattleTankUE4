@@ -67,7 +67,11 @@ void UTankAimingComponent::MoveBarrelTowards(FVector Direction)
 	UpdateFiringState(DeltaRotator);
 
 	Barrel->Elevate(DeltaRotator.Pitch);
-	Turret->Rotate(DeltaRotator.Yaw);
+
+	if (FMath::Abs(DeltaRotator.Yaw) < 180)
+		Turret->Rotate(DeltaRotator.Yaw);
+	else
+		Turret->Rotate(-DeltaRotator.Yaw);
 }
 
 		void UTankAimingComponent::UpdateFiringState(FRotator DeltaRotator) {
@@ -104,3 +108,11 @@ void UTankAimingComponent::Fire() {
 			);
 		}
 
+
+
+// GETTERS AND SETTERS
+
+EFiringState UTankAimingComponent::GetFiringState() const
+{
+	return FiringState;
+}
