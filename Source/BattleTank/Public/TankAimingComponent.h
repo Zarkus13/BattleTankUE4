@@ -70,6 +70,8 @@ private:
 	void MoveBarrelTowards(FVector Direction);
 	void UpdateFiringState(FRotator DeltaRotator);
 	bool IsTurretNotMoving(FRotator DeltaRotator);
+	void RotateTurret(float Yaw) const;
 	
 	AProjectile* SpawnProjectile() const;
+	void HandleAmmoNumber();
 };

@@ -68,10 +68,7 @@ void UTankAimingComponent::MoveBarrelTowards(FVector Direction)
 
 	Barrel->Elevate(DeltaRotator.Pitch);
 
-	if (FMath::Abs(DeltaRotator.Yaw) < 180)
-		Turret->Rotate(DeltaRotator.Yaw);
-	else
-		Turret->Rotate(-DeltaRotator.Yaw);
+	RotateTurret(DeltaRotator.Yaw);
 }
 
 		void UTankAimingComponent::UpdateFiringState(FRotator DeltaRotator) {
@@ -89,6 +86,14 @@ void UTankAimingComponent::MoveBarrelTowards(FVector Direction)
 			return DeltaRotator.Pitch <= MaximumDeltaForLockedState && DeltaRotator.Yaw <= MaximumDeltaForLockedState;
 		}
 
+		void UTankAimingComponent::RotateTurret(float Yaw) const
+		{
+			if (FMath::Abs(Yaw) < 180)
+				Turret->Rotate(Yaw);
+			else
+				Turret->Rotate(-Yaw);
+		}
+
 
 
 void UTankAimingComponent::Fire() {
@@ -99,11 +104,7 @@ void UTankAimingComponent::Fire() {
 
 		LastFireTime = FPlatformTime::Seconds();
 
-		if (CurrentAmmo > 0)
-			CurrentAmmo--;
-		
-		if (CurrentAmmo <= 0)
-			FiringState = EFiringState::OutOfAmmo;
+		HandleAmmoNumber();
 	}
 }
 
@@ -114,6 +115,15 @@ void UTankAimingComponent::Fire() {
 				Barrel->GetSocketLocation("Projectile"),
 				Barrel->GetSocketRotation("Projectile")
 			);
+		}
+
+		void UTankAimingComponent::HandleAmmoNumber()
+		{
+			if (CurrentAmmo > 0)
+				CurrentAmmo--;
+
+			if (CurrentAmmo <= 0)
+				FiringState = EFiringState::OutOfAmmo;
 		}
 
 
