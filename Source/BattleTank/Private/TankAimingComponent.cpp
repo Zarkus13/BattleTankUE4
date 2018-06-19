@@ -22,6 +22,12 @@ UTankAimingComponent::UTankAimingComponent()
 	// ...
 }
 
+
+void UTankAimingComponent::BeginPlay()
+{
+	CurrentAmmo = MaximumAmmo;
+}
+
 void UTankAimingComponent::Initialize(UTankBarrel * Barrel, UTankTurret * Turret)
 {
 	this->Barrel = Barrel;
@@ -41,7 +47,7 @@ void UTankAimingComponent::AimAt(FVector HitLocation)
 		);
 }
 
-		bool UTankAimingComponent::CalculateLaunchVelocity(FVector & LaunchVelocity, FVector StartLocation, FVector HitLocation)
+bool UTankAimingComponent::CalculateLaunchVelocity(FVector & LaunchVelocity, FVector StartLocation, FVector HitLocation)
 		{
 			return UGameplayStatics::SuggestProjectileVelocity(
 				this,
@@ -64,26 +70,28 @@ void UTankAimingComponent::MoveBarrelTowards(FVector Direction)
 	auto AimRotator = Direction.Rotation();
 	auto DeltaRotator = AimRotator - BarrelRotator;
 
-	UpdateFiringState(DeltaRotator);
+	UpdateFiringState(Direction);
 
 	Barrel->Elevate(DeltaRotator.Pitch);
 
 	RotateTurret(DeltaRotator.Yaw);
 }
 
-		void UTankAimingComponent::UpdateFiringState(FRotator DeltaRotator) {
+		void UTankAimingComponent::UpdateFiringState(FVector Direction) {
 			if (FiringState == EFiringState::OutOfAmmo)
 				return;
 			else if ((FPlatformTime::Seconds() - LastFireTime) < ReloadTimeInSeconds)
 				FiringState = EFiringState::Reloading;
-			else if (IsTurretNotMoving(DeltaRotator))
+			else if (IsTurretNotMoving(Direction))
 				FiringState = EFiringState::Locked;
 			else
 				FiringState = EFiringState::Aiming;
 		}
 
-		bool UTankAimingComponent::IsTurretNotMoving(FRotator DeltaRotator) {
-			return DeltaRotator.Pitch <= MaximumDeltaForLockedState && DeltaRotator.Yaw <= MaximumDeltaForLockedState;
+		bool UTankAimingComponent::IsTurretNotMoving(FVector Direction) {
+			if (!ensure(Barrel)) { return false; }
+			auto BarrelForward = Barrel->GetForwardVector();
+			return BarrelForward.Equals(Direction, 0.01); // vectors are equal
 		}
 
 		void UTankAimingComponent::RotateTurret(float Yaw) const

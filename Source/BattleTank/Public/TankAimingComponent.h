@@ -45,7 +45,7 @@ protected:
 	int32 MaximumAmmo = 10;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Firing")
-	int32 CurrentAmmo = MaximumAmmo;
+	int32 CurrentAmmo = 0;
 
 private:
 	UPROPERTY(EditAnywhere, Category = "Setup")
@@ -58,7 +58,9 @@ private:
 	float ReloadTimeInSeconds = 3.f;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Firing")
-	float MaximumDeltaForLockedState = 0.01f;
+	float MaximumDeltaForLockedState = 0.001f;
+
+	void BeginPlay() override;
 
 	double LastFireTime = 0;
 	
@@ -68,8 +70,8 @@ private:
 	bool CalculateLaunchVelocity(FVector& LaunchVelocity, FVector StartLocation, FVector HitLocation);
 	
 	void MoveBarrelTowards(FVector Direction);
-	void UpdateFiringState(FRotator DeltaRotator);
-	bool IsTurretNotMoving(FRotator DeltaRotator);
+	void UpdateFiringState(FVector DeltaRotator);
+	bool IsTurretNotMoving(FVector DeltaRotator);
 	void RotateTurret(float Yaw) const;
 	
 	AProjectile* SpawnProjectile() const;

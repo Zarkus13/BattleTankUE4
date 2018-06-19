@@ -17,11 +17,14 @@ class BATTLETANK_API ATankAIController : public AAIController
 {
 	GENERATED_BODY()
 
+public:
+	UPROPERTY(VisibleAnywhere)
+	UTankAimingComponent* AimingComponent = nullptr;
+
 private:
 	UPROPERTY(EditDefaultsOnly, Category = "Movement")
 	float AcceptanceRadius = 8000;
 
-	UTankAimingComponent* AimingComponent = nullptr;
 	ATank* PlayerTank = nullptr;
 
 	void BeginPlay() override;
