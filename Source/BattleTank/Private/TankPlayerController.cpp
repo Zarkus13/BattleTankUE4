@@ -92,7 +92,7 @@ bool ATankPlayerController::FindAimingLocation(FHitResult& HitResult, FVector Cr
 		OUT HitResult,
 		CrosshairLocation,
 		End,
-		ECollisionChannel::ECC_Visibility
+		ECollisionChannel::ECC_Camera
 	);
 }
 
