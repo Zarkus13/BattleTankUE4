@@ -8,6 +8,7 @@
 
 class UTankAimingComponent;
 class ATank;
+class APawn;
 
 /**
  * 
@@ -29,5 +30,10 @@ private:
 
 	void BeginPlay() override;
 	void Tick(float DeltaTime) override;
+
+	void SetPawn(APawn* InPawn) override;
+
+	UFUNCTION()
+	void OnTankDeath();
 
 };

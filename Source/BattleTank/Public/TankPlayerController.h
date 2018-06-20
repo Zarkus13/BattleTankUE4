@@ -7,6 +7,8 @@
 #include "TankPlayerController.generated.h"
 
 class UTankAimingComponent;
+class ATank;
+class APawn;
 
 /**
 *
@@ -36,12 +38,17 @@ private:
 	void BeginPlay() override;
 	void Tick(float DeltaTime) override;
 
+	void SetPawn(APawn* InPawn) override;
+
+	UFUNCTION()
+	void OnPlayerDeath();
+
 	void AimTowardsCrosshair() const;
-
 	bool GetSightRayHitLocation(FVector &OutHitLocation) const;
-
 	bool GetLookDirection(FVector& CrosshairLocation, FVector& LookDirection) const;
-
 	bool FindAimingLocation(FHitResult& HitResult, FVector CrosshairLocation, FVector LookDirection) const;
 
+public:
+	UFUNCTION(BlueprintCallable, Category = "Setup")
+	ATank * GetTank() const;
 };
