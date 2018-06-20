@@ -5,6 +5,8 @@
 #include "Particles/ParticleSystemComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "PhysicsEngine/RadialForceComponent.h"
+#include "Engine/World.h"
+#include "Public/TimerManager.h"
 
 
 UStaticMeshComponent* InitializeCollisionMesh(AProjectile* Projectile);
@@ -76,5 +78,15 @@ void AProjectile::OnHit(UPrimitiveComponent * HitComponent, AActor * OtherActor,
 	LaunchBlast->Deactivate();
 	ImpactBlast->Activate();
 	ExplosionForce->FireImpulse();
+
+	SetRootComponent(ImpactBlast);
+	CollisionMesh->DestroyComponent();
+
+	auto TimerHandler = FTimerHandle();
+
+	GetWorld()->GetTimerManager().SetTimer(TimerHandler, this, &AProjectile::OnDestroy, DestroyDelay, false);
 }
 
+void AProjectile::OnDestroy() {
+	Destroy();
+}
